@@ -8,20 +8,27 @@ syntax on
 autocmd VimEnter * colorscheme dracula
 
 
-" Set line numbers on the left-hand side
+" Set hybrid line numbers on the left-hand side
 
 set number
 set relativenumber
 
 
-" This will make it so that code is folded at indents in the code
-
-set foldmethod=indent
-
-
 " This will show Vim-Motions as they are being typed
 
 set showcmd
+
+
+" This block of code enables incremental search highlighting, and peremnant
+" search highlighting
+
+set incsearch
+set hlsearch
+
+
+" This will make it so that code is folded at indents in the code
+
+set foldmethod=indent
 
 
 " Make each file remember the depth and placement of the folds on save

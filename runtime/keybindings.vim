@@ -13,6 +13,12 @@ nmap <leader>n :Lexplore<CR>
 nmap <C-c> <C-[>
 
 
+" This will make <C-l> (CTRL+l) to run the command ':nohls' and then redraw
+" the screen (this will remove any highlighting from '/' searches)
+
+nnoremap <C-l> :nohls<CR><C-l>
+
+
 " Allow use of <Leader>d to delete without yanking
 
 nmap <leader>d "_d"
