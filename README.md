@@ -1,4 +1,4 @@
-# vim-config
+# vim-config 😶‍🌫️
 This is the home of my Vim config. I have already created a NeoVim one, so I thought this would be fun!
 
 Before we begin, this is for a Mac (UNIX) setup, so this may not work one-to-one with Windows machines because of pathnames...
