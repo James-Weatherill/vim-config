@@ -42,7 +42,7 @@ source ~/.vim/runtime/keybindings.vim
 source ~/.vim/runtime/settings.vim
 ```
 
-&nbsp;&nbsp;&nbsp;This will source all of the files that are in the `~/.vim/runtime/` directory.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This will source all of the files that are in the `~/.vim/runtime/` directory.
 
 5. After that, the only remaining thing is to open up an empty Vim buffer using the `vim` command in the terminal and run: `:PlugInstall`.
 
