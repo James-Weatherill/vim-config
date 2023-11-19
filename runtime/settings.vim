@@ -19,6 +19,11 @@ set relativenumber
 set foldmethod=indent
 
 
+" This will show Vim-Motions as they are being typed
+
+set showcmd
+
+
 " Make each file remember the depth and placement of the folds on save
 
 augroup remember_folds
