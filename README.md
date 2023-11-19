@@ -1,7 +1,7 @@
 # vim-config
 This is the home of my Vim config. I have already created a NeoVim one, so I thought this would be fun!
 
-Before we begin, this is for a Mac (UNIX) setup, so this may not work one-2-one with Windows machines because of pathnames...
+Before we begin, this is for a Mac (UNIX) setup, so this may not work one-to-one with Windows machines because of pathnames...
 
 First, you must go to the `~/` directory and create a directory called `.vim/`.
 
@@ -9,7 +9,7 @@ Next, also in the `~/` directory, created a file called `.vimrc`.
 
 Now, both `~/.vim/` and `~/.vimrc` should be valid pathnames on your computer.
 
-Now that that is all setup, move the files above into the `~/.vim/` directory, and run the command below:
+Now that that is all setup, download and move the files in this repository into the `~/.vim/` directory, and run the command below:
 ```
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -46,6 +46,6 @@ source ~/.vim/runtime/settings.vim
 
 This will source all of the files that are in the `~/.vim/runtime/` directory.
 
-After that, the only remaining thing is to open up an empty vim file using `vim` in the terminal and running: `:PlugInstall`.
+After that, the only remaining thing is to open up an empty Vim file using the `vim` command in the terminal and running: `:PlugInstall` in Vim.
 
 Now, the Vim config is complete, and everything is in place, just install the 'coc' lsp's as and when they are needed.
