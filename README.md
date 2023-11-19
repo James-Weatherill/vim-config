@@ -42,8 +42,8 @@ source ~/.vim/runtime/keybindings.vim
 source ~/.vim/runtime/settings.vim
 ```
 
-This will source all of the files that are in the `~/.vim/runtime/` directory.
+   This will source all of the files that are in the `~/.vim/runtime/` directory.
 
-5. After that, the only remaining thing is to open up an empty Vim file using the `vim` command in the terminal and run: `:PlugInstall`.
+5. After that, the only remaining thing is to open up an empty Vim buffer using the `vim` command in the terminal and run: `:PlugInstall`.
 
-Now, the Vim config is complete, and everything is in place, just install the 'coc' lsp's as and when they are needed.
+**Now, the Vim config is complete, and everything is in place, just install the 'coc' lsp's as and when they are needed!**
