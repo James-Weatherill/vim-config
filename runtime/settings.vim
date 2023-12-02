@@ -3,6 +3,11 @@
 syntax on
 
 
+" This will add improved colours to vim
+
+set termguicolors
+
+
 " This line is launching the Dracula colorscheme every time vim opens
 
 autocmd VimEnter * colorscheme dracula
@@ -17,6 +22,13 @@ set relativenumber
 " This will show Vim-Motions as they are being typed
 
 set showcmd
+
+
+" These lines improve Vim command line autocompletion
+
+set wildmenu
+set wildmode=longest:full,full
+set wildoptions=pum
 
 
 " This block of code enables incremental search highlighting, and peremnant
