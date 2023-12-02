@@ -10,7 +10,7 @@ set termguicolors
 
 " This line is launching the Dracula colorscheme every time vim opens
 
-autocmd VimEnter * colorscheme dracula
+colorscheme dracula
 
 
 " Set hybrid line numbers on the left-hand side
@@ -49,6 +49,11 @@ augroup remember_folds
 autocmd BufWinLeave * mkview
 autocmd BufWinEnter * silent! loadview
 augroup END
+
+
+" This removes the massive grey bar on the left
+
+set signcolumn=no
 
 
 " Set tab behavior

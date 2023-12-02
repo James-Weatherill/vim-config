@@ -9,9 +9,6 @@ call plug#begin('~/.vim/plugged')
 " nvim-coc
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" vim-dracula
-Plug 'dracula/vim', { 'as': 'dracula' }
-
 " vim-ployglot
 Plug 'sheerun/vim-polyglot'
 
