@@ -1,360 +1,372 @@
-" File:       dracula.vim
-" Maintainer: Crusoe Xia (crusoexia)
-" URL:        https://github.com/crusoexia/vim-dracula
-" License:    MIT
+" Dracula Theme: {{{
 "
-" Configuration:
+" https://github.com/zenorocha/dracula-theme
 "
-"   * Enable italic
+" Copyright 2016, All rights reserved
 "
-"       let g:dracula_italic = 1
+" Code licensed under the MIT license
+" http://zenorocha.mit-license.org
+"
+" @author Trevor Heins <@heinst>
+" @author Éverton Ribeiro <nuxlli@gmail.com>
+" @author Derek Sifford <dereksifford@gmail.com>
+" @author Zeno Rocha <hi@zenorocha.com>
+scriptencoding utf8
+" }}}
 
-" Initialisation
-" --------------
+" Configuration: {{{
 
-if ! has("gui_running") && &t_Co < 256
+if v:version > 580
+  highlight clear
+  if exists('syntax_on')
+    syntax reset
+  endif
+endif
+
+let g:colors_name = 'dracula'
+
+if !(has('termguicolors') && &termguicolors) && !has('gui_running') && &t_Co != 256
   finish
 endif
 
-if ! exists("g:dracula_italic")
-    let g:dracula_italic = 0
+" Palette: {{{2
+
+let s:fg        = g:dracula#palette.fg
+
+let s:bglighter = g:dracula#palette.bglighter
+let s:bglight   = g:dracula#palette.bglight
+let s:bg        = g:dracula#palette.bg
+let s:bgdark    = g:dracula#palette.bgdark
+let s:bgdarker  = g:dracula#palette.bgdarker
+
+let s:comment   = g:dracula#palette.comment
+let s:selection = g:dracula#palette.selection
+let s:subtle    = g:dracula#palette.subtle
+
+let s:cyan      = g:dracula#palette.cyan
+let s:green     = g:dracula#palette.green
+let s:orange    = g:dracula#palette.orange
+let s:pink      = g:dracula#palette.pink
+let s:purple    = g:dracula#palette.purple
+let s:red       = g:dracula#palette.red
+let s:yellow    = g:dracula#palette.yellow
+
+let s:none      = ['NONE', 'NONE']
+
+if has('nvim')
+  for s:i in range(16)
+    let g:terminal_color_{s:i} = g:dracula#palette['color_' . s:i]
+  endfor
 endif
+
+if has('terminal')
+  let g:terminal_ansi_colors = []
+  for s:i in range(16)
+    call add(g:terminal_ansi_colors, g:dracula#palette['color_' . s:i])
+  endfor
+endif
+
+" }}}2
+" User Configuration: {{{2
+
+if !exists('g:dracula_bold')
+  let g:dracula_bold = 1
+endif
+
+if !exists('g:dracula_italic')
+  let g:dracula_italic = 1
+endif
+
+if !exists('g:dracula_underline')
+  let g:dracula_underline = 1
+endif
+
+if !exists('g:dracula_undercurl')
+  let g:dracula_undercurl = g:dracula_underline
+endif
+
+if !exists('g:dracula_full_special_attrs_support')
+  let g:dracula_full_special_attrs_support = has('gui_running')
+endif
+
+if !exists('g:dracula_inverse')
+  let g:dracula_inverse = 1
+endif
+
+if !exists('g:dracula_colorterm')
+  let g:dracula_colorterm = 1
+endif
+
+if !exists('g:dracula_high_contrast_diff')
+  let g:dracula_high_contrast_diff = 0
+endif
+
+"}}}2
+" Script Helpers: {{{2
+
+let s:attrs = {
+      \ 'bold': g:dracula_bold == 1 ? 'bold' : 0,
+      \ 'italic': g:dracula_italic == 1 ? 'italic' : 0,
+      \ 'underline': g:dracula_underline == 1 ? 'underline' : 0,
+      \ 'undercurl': g:dracula_undercurl == 1 ? 'undercurl' : 0,
+      \ 'inverse': g:dracula_inverse == 1 ? 'inverse' : 0,
+      \}
+
+function! s:h(scope, fg, ...) " bg, attr_list, special
+  let l:fg = copy(a:fg)
+  let l:bg = get(a:, 1, ['NONE', 'NONE'])
+
+  let l:attr_list = filter(get(a:, 2, ['NONE']), 'type(v:val) == 1')
+  let l:attrs = len(l:attr_list) > 0 ? join(l:attr_list, ',') : 'NONE'
+
+  " If the UI does not have full support for special attributes (like underline and
+  " undercurl) and the highlight does not explicitly set the foreground color,
+  " make the foreground the same as the attribute color to ensure the user will
+  " get some highlight if the attribute is not supported. The default behavior
+  " is to assume that terminals do not have full support, but the user can set
+  " the global variable `g:dracula_full_special_attrs_support` explicitly if the
+  " default behavior is not desirable.
+  let l:special = get(a:, 3, ['NONE', 'NONE'])
+  if l:special[0] !=# 'NONE' && l:fg[0] ==# 'NONE' && !g:dracula_full_special_attrs_support
+    let l:fg[0] = l:special[0]
+    let l:fg[1] = l:special[1]
+  endif
+
+  let l:hl_string = [
+        \ 'highlight', a:scope,
+        \ 'guifg=' . l:fg[0], 'ctermfg=' . l:fg[1],
+        \ 'guibg=' . l:bg[0], 'ctermbg=' . l:bg[1],
+        \ 'gui=' . l:attrs, 'cterm=' . l:attrs,
+        \ 'guisp=' . l:special[0],
+        \]
+
+  execute join(l:hl_string, ' ')
+endfunction
+
+"}}}2
+" Dracula Highlight Groups: {{{2
+
+call s:h('DraculaBgLight', s:none, s:bglight)
+call s:h('DraculaBgLighter', s:none, s:bglighter)
+call s:h('DraculaBgDark', s:none, s:bgdark)
+call s:h('DraculaBgDarker', s:none, s:bgdarker)
+
+call s:h('DraculaFg', s:fg)
+call s:h('DraculaFgUnderline', s:fg, s:none, [s:attrs.underline])
+call s:h('DraculaFgBold', s:fg, s:none, [s:attrs.bold])
+
+call s:h('DraculaComment', s:comment)
+call s:h('DraculaCommentBold', s:comment, s:none, [s:attrs.bold])
+
+call s:h('DraculaSelection', s:none, s:selection)
+
+call s:h('DraculaSubtle', s:subtle)
+
+call s:h('DraculaCyan', s:cyan)
+call s:h('DraculaCyanItalic', s:cyan, s:none, [s:attrs.italic])
+
+call s:h('DraculaGreen', s:green)
+call s:h('DraculaGreenBold', s:green, s:none, [s:attrs.bold])
+call s:h('DraculaGreenItalic', s:green, s:none, [s:attrs.italic])
+call s:h('DraculaGreenItalicUnderline', s:green, s:none, [s:attrs.italic, s:attrs.underline])
+
+call s:h('DraculaOrange', s:orange)
+call s:h('DraculaOrangeBold', s:orange, s:none, [s:attrs.bold])
+call s:h('DraculaOrangeItalic', s:orange, s:none, [s:attrs.italic])
+call s:h('DraculaOrangeBoldItalic', s:orange, s:none, [s:attrs.bold, s:attrs.italic])
+call s:h('DraculaOrangeInverse', s:bg, s:orange)
+
+call s:h('DraculaPink', s:pink)
+call s:h('DraculaPinkItalic', s:pink, s:none, [s:attrs.italic])
+
+call s:h('DraculaPurple', s:purple)
+call s:h('DraculaPurpleBold', s:purple, s:none, [s:attrs.bold])
+call s:h('DraculaPurpleItalic', s:purple, s:none, [s:attrs.italic])
+
+call s:h('DraculaRed', s:red)
+call s:h('DraculaRedInverse', s:fg, s:red)
+
+call s:h('DraculaYellow', s:yellow)
+call s:h('DraculaYellowItalic', s:yellow, s:none, [s:attrs.italic])
+
+call s:h('DraculaError', s:red, s:none, [], s:red)
+
+call s:h('DraculaErrorLine', s:none, s:none, [s:attrs.undercurl], s:red)
+call s:h('DraculaWarnLine', s:none, s:none, [s:attrs.undercurl], s:orange)
+call s:h('DraculaInfoLine', s:none, s:none, [s:attrs.undercurl], s:cyan)
+
+call s:h('DraculaTodo', s:cyan, s:none, [s:attrs.bold, s:attrs.inverse])
+call s:h('DraculaSearch', s:green, s:none, [s:attrs.inverse])
+call s:h('DraculaBoundary', s:comment, s:bgdark)
+call s:h('DraculaWinSeparator', s:comment, s:bgdark)
+call s:h('DraculaLink', s:cyan, s:none, [s:attrs.underline])
+
+if g:dracula_high_contrast_diff
+  call s:h('DraculaDiffChange', s:yellow, s:purple)
+  call s:h('DraculaDiffDelete', s:bgdark, s:red)
+else
+  call s:h('DraculaDiffChange', s:orange, s:none)
+  call s:h('DraculaDiffDelete', s:red, s:bgdark)
+endif
+
+call s:h('DraculaDiffText', s:bg, s:orange)
+call s:h('DraculaInlayHint', s:comment, s:bgdark)
+
+" }}}2
+
+" }}}
+" User Interface: {{{
 
 set background=dark
-hi clear
 
-if exists("syntax_on")
-  syntax reset
-endif
+" Required as some plugins will overwrite
+call s:h('Normal', s:fg, g:dracula_colorterm || has('gui_running') ? s:bg : s:none )
+call s:h('StatusLine', s:none, s:bglighter, [s:attrs.bold])
+call s:h('StatusLineNC', s:none, s:bglight)
+call s:h('StatusLineTerm', s:none, s:bglighter, [s:attrs.bold])
+call s:h('StatusLineTermNC', s:none, s:bglight)
+call s:h('WildMenu', s:bg, s:purple, [s:attrs.bold])
+call s:h('CursorLine', s:none, s:subtle)
 
-let colors_name = "dracula"
+hi! link ColorColumn  DraculaBgDark
+hi! link CursorColumn CursorLine
+hi! link CursorLineNr DraculaYellow
+hi! link DiffAdd      DraculaGreen
+hi! link DiffAdded    DiffAdd
+hi! link DiffChange   DraculaDiffChange
+hi! link DiffDelete   DraculaDiffDelete
+hi! link DiffRemoved  DiffDelete
+hi! link DiffText     DraculaDiffText
+hi! link Directory    DraculaPurpleBold
+hi! link ErrorMsg     DraculaRedInverse
+hi! link FoldColumn   DraculaSubtle
+hi! link Folded       DraculaBoundary
+hi! link IncSearch    DraculaOrangeInverse
+call s:h('LineNr', s:comment)
+hi! link MoreMsg      DraculaFgBold
+hi! link NonText      DraculaSubtle
+hi! link Pmenu        DraculaBgDark
+hi! link PmenuSbar    DraculaBgDark
+hi! link PmenuSel     DraculaSelection
+hi! link PmenuThumb   DraculaSelection
+hi! link Question     DraculaFgBold
+hi! link Search       DraculaSearch
+call s:h('SignColumn', s:comment)
+hi! link TabLine      DraculaBoundary
+hi! link TabLineFill  DraculaBgDark
+hi! link TabLineSel   Normal
+hi! link Title        DraculaGreenBold
+hi! link VertSplit    DraculaWinSeparator
+hi! link Visual       DraculaSelection
+hi! link VisualNOS    Visual
+hi! link WarningMsg   DraculaOrangeInverse
 
-" Palettes
-" --------
+" }}}
+" Syntax: {{{
 
-if has("gui_running")
-  let s:vmode      = "gui"
-  let s:background = "#323342"
-  let s:foreground = "#F2F2EC"
-  let s:window     = "#7272A5"
-  let s:linenr     = "#898A8D"
-  let s:line       = "#3C3E54"
-  let s:darkcolumn = "#2D2F3B"
-  let s:selection  = "#54576A"
-  let s:comment    = "#7283BF"
-  let s:error      = "#5F0000"
-  
-  let s:pink       = "#FF79C6"
-  let s:green      = "#50FA7B"
-  let s:aqua       = "#8BE9FD"
-  let s:yellow     = "#F1FA8C"
-  let s:orange     = "#FFB86C"
-  let s:purple     = "#BD93F9"
-  let s:red        = "#FF5555"
+" Required as some plugins will overwrite
+call s:h('MatchParen', s:green, s:none, [s:attrs.underline])
+call s:h('Conceal', s:cyan, s:none)
 
-  let s:addfg      = "#F8F8F2"
-  let s:addbg      = "#468410"
-  let s:delfg      = "#8B080B"
-  let s:changefg   = "#F8F8F2"
-  let s:changebg   = "#243A5F"
+" Neovim uses SpecialKey for escape characters only. Vim uses it for that, plus whitespace.
+if has('nvim')
+  hi! link SpecialKey DraculaRed
+  hi! link LspReferenceText DraculaSelection
+  hi! link LspReferenceRead DraculaSelection
+  hi! link LspReferenceWrite DraculaSelection
+  " Link old 'LspDiagnosticsDefault*' hl groups
+  " for backward compatibility with neovim v0.5.x
+  hi! link LspDiagnosticsDefaultInformation DiagnosticInfo
+  hi! link LspDiagnosticsDefaultHint DiagnosticHint
+  hi! link LspDiagnosticsDefaultError DiagnosticError
+  hi! link LspDiagnosticsDefaultWarning DiagnosticWarn
+  hi! link LspDiagnosticsUnderlineError DiagnosticUnderlineError
+  hi! link LspDiagnosticsUnderlineHint DiagnosticUnderlineHint
+  hi! link LspDiagnosticsUnderlineInformation DiagnosticUnderlineInfo
+  hi! link LspDiagnosticsUnderlineWarning DiagnosticUnderlineWarn
+  hi! link LspInlayHint DraculaInlayHint
+
+  hi! link DiagnosticInfo DraculaCyan
+  hi! link DiagnosticHint DraculaCyan
+  hi! link DiagnosticError DraculaError
+  hi! link DiagnosticWarn DraculaOrange
+  hi! link DiagnosticUnderlineError DraculaErrorLine
+  hi! link DiagnosticUnderlineHint DraculaInfoLine
+  hi! link DiagnosticUnderlineInfo DraculaInfoLine
+  hi! link DiagnosticUnderlineWarn DraculaWarnLine
+
+  hi! link WinSeparator DraculaWinSeparator
+
+  if has('nvim-0.9')
+    hi! link  @lsp.type.class DraculaCyan
+    hi! link  @lsp.type.decorator DraculaGreen
+    hi! link  @lsp.type.enum DraculaCyan
+    hi! link  @lsp.type.enumMember DraculaPurple
+    hi! link  @lsp.type.function DraculaGreen
+    hi! link  @lsp.type.interface DraculaCyan
+    hi! link  @lsp.type.macro DraculaCyan
+    hi! link  @lsp.type.method DraculaGreen
+    hi! link  @lsp.type.namespace DraculaCyan
+    hi! link  @lsp.type.parameter DraculaOrangeItalic
+    hi! link  @lsp.type.property DraculaOrange
+    hi! link  @lsp.type.struct DraculaCyan
+    hi! link  @lsp.type.type DraculaCyanItalic
+    hi! link  @lsp.type.typeParameter DraculaPink
+    hi! link  @lsp.type.variable DraculaFg
+  endif
 else
-  let s:vmode      = "cterm"
-  let s:background = "235"
-  let s:foreground = "231"
-  let s:window     = "60"
-  let s:linenr     = "240"
-  let s:line       = "236"
-  let s:darkcolumn = "234"
-  let s:selection  = "238"
-  let s:comment    = "61"
-  let s:error      = "52"
-  
-  let s:pink       = "212"
-  let s:green      = "84"
-  let s:aqua       = "117"
-  let s:yellow     = "228"
-  let s:orange     = "215"
-  let s:purple     = "141"
-  let s:red        = "231"
-
-  let s:addfg      = "231"
-  let s:addbg      = "64"
-  let s:delfg      = "88"
-  let s:changefg   = "231"
-  let s:changebg   = "23"
+  hi! link SpecialKey DraculaPink
 endif
 
-" Formatting Options
-" ------------------
+hi! link Comment DraculaComment
+hi! link Underlined DraculaFgUnderline
+hi! link Todo DraculaTodo
 
-let s:none   = "NONE"
-let s:t_none = "NONE"
-let s:n      = "NONE"
-let s:c      = ",undercurl"
-let s:r      = ",reverse"
-let s:s      = ",standout"
-let s:b      = ",bold"
-let s:u      = ",underline"
-let s:i      = ",italic"
+hi! link Error DraculaError
+hi! link SpellBad DraculaErrorLine
+hi! link SpellLocal DraculaWarnLine
+hi! link SpellCap DraculaInfoLine
+hi! link SpellRare DraculaInfoLine
 
-" Highlighting Primitives
-" -----------------------
+hi! link Constant DraculaPurple
+hi! link String DraculaYellow
+hi! link Character DraculaPink
+hi! link Number Constant
+hi! link Boolean Constant
+hi! link Float Constant
 
-exe "let s:bg_none       = ' ".s:vmode."bg=".s:none      ."'"
-exe "let s:bg_foreground = ' ".s:vmode."bg=".s:foreground."'"
-exe "let s:bg_background = ' ".s:vmode."bg=".s:background."'"
-exe "let s:bg_selection  = ' ".s:vmode."bg=".s:selection ."'"
-exe "let s:bg_line       = ' ".s:vmode."bg=".s:line      ."'"
-exe "let s:bg_linenr     = ' ".s:vmode."bg=".s:linenr    ."'"
-exe "let s:bg_comment    = ' ".s:vmode."bg=".s:comment   ."'"
-exe "let s:bg_red        = ' ".s:vmode."bg=".s:red       ."'"
-exe "let s:bg_orange     = ' ".s:vmode."bg=".s:orange    ."'"
-exe "let s:bg_yellow     = ' ".s:vmode."bg=".s:yellow    ."'"
-exe "let s:bg_green      = ' ".s:vmode."bg=".s:green     ."'"
-exe "let s:bg_aqua       = ' ".s:vmode."bg=".s:aqua      ."'"
-exe "let s:bg_purple     = ' ".s:vmode."bg=".s:purple    ."'"
-exe "let s:bg_pink       = ' ".s:vmode."bg=".s:pink      ."'"
-exe "let s:bg_window     = ' ".s:vmode."bg=".s:window    ."'"
-exe "let s:bg_darkcolumn = ' ".s:vmode."bg=".s:darkcolumn."'"
-exe "let s:bg_addbg      = ' ".s:vmode."bg=".s:addbg     ."'"
-exe "let s:bg_addfg      = ' ".s:vmode."bg=".s:addfg     ."'"
-exe "let s:bg_changebg   = ' ".s:vmode."bg=".s:changebg  ."'"
-exe "let s:bg_changefg   = ' ".s:vmode."bg=".s:changefg  ."'"
-exe "let s:bg_error      = ' ".s:vmode."bg=".s:error     ."'"
+hi! link Identifier DraculaFg
+hi! link Function DraculaGreen
 
-exe "let s:fg_none       = ' ".s:vmode."fg=".s:none      ."'"
-exe "let s:fg_foreground = ' ".s:vmode."fg=".s:foreground."'"
-exe "let s:fg_background = ' ".s:vmode."fg=".s:background."'"
-exe "let s:fg_selection  = ' ".s:vmode."fg=".s:selection ."'"
-exe "let s:fg_line       = ' ".s:vmode."fg=".s:line      ."'"
-exe "let s:fg_linenr     = ' ".s:vmode."fg=".s:linenr    ."'"
-exe "let s:fg_comment    = ' ".s:vmode."fg=".s:comment   ."'"
-exe "let s:fg_red        = ' ".s:vmode."fg=".s:red       ."'"
-exe "let s:fg_orange     = ' ".s:vmode."fg=".s:orange    ."'"
-exe "let s:fg_yellow     = ' ".s:vmode."fg=".s:yellow    ."'"
-exe "let s:fg_green      = ' ".s:vmode."fg=".s:green     ."'"
-exe "let s:fg_aqua       = ' ".s:vmode."fg=".s:aqua      ."'"
-exe "let s:fg_purple     = ' ".s:vmode."fg=".s:purple    ."'"
-exe "let s:fg_pink       = ' ".s:vmode."fg=".s:pink      ."'"
-exe "let s:fg_window     = ' ".s:vmode."fg=".s:window    ."'"
-exe "let s:fg_darkcolumn = ' ".s:vmode."fg=".s:darkcolumn."'"
-exe "let s:fg_addbg      = ' ".s:vmode."fg=".s:addbg     ."'"
-exe "let s:fg_addfg      = ' ".s:vmode."fg=".s:addfg     ."'"
-exe "let s:fg_delfg      = ' ".s:vmode."fg=".s:delfg     ."'"
-exe "let s:fg_changebg   = ' ".s:vmode."fg=".s:changebg  ."'"
-exe "let s:fg_changefg   = ' ".s:vmode."fg=".s:changefg  ."'"
-exe "let s:fg_error      = ' ".s:vmode."fg=".s:error     ."'"
+hi! link Statement DraculaPink
+hi! link Conditional DraculaPink
+hi! link Repeat DraculaPink
+hi! link Label DraculaPink
+hi! link Operator DraculaPink
+hi! link Keyword DraculaPink
+hi! link Exception DraculaPink
 
-exe "let s:fmt_none      = ' ".s:vmode."=NONE".          " term=NONE"        ."'"
-exe "let s:fmt_bold      = ' ".s:vmode."=NONE".s:b.      " term=NONE".s:b    ."'"
-exe "let s:fmt_bldi      = ' ".s:vmode."=NONE".s:b.s:i.  " term=NONE".s:b.s:i."'"
-exe "let s:fmt_undr      = ' ".s:vmode."=NONE".s:u.      " term=NONE".s:u    ."'"
-exe "let s:fmt_undb      = ' ".s:vmode."=NONE".s:u.s:b.  " term=NONE".s:u.s:b."'"
-exe "let s:fmt_undi      = ' ".s:vmode."=NONE".s:u.s:i.  " term=NONE".s:u.s:i."'"
-exe "let s:fmt_curl      = ' ".s:vmode."=NONE".s:c.      " term=NONE".s:c    ."'"
-exe "let s:fmt_ital      = ' ".s:vmode."=NONE".s:i.      " term=NONE".s:i    ."'"
-exe "let s:fmt_stnd      = ' ".s:vmode."=NONE".s:s.      " term=NONE".s:s    ."'"
-exe "let s:fmt_revr      = ' ".s:vmode."=NONE".s:r.      " term=NONE".s:r    ."'"
-exe "let s:fmt_revb      = ' ".s:vmode."=NONE".s:r.s:b.  " term=NONE".s:r.s:b."'"
+hi! link PreProc DraculaPink
+hi! link Include DraculaPink
+hi! link Define DraculaPink
+hi! link Macro DraculaPink
+hi! link PreCondit DraculaPink
+hi! link StorageClass DraculaPink
+hi! link Structure DraculaPink
+hi! link Typedef DraculaPink
 
-" Highlighting 
-" ----------------
+hi! link Type DraculaCyanItalic
 
-" editor
-exe "hi! Normal"          .s:fg_foreground  .s:bg_background  .s:fmt_none
-exe "hi! ColorColumn"     .s:fg_none        .s:bg_line        .s:fmt_none
-exe "hi! CursorColumn"    .s:fg_none        .s:bg_line        .s:fmt_none
-exe "hi! CursorLine"      .s:fg_none        .s:bg_line        .s:fmt_none
-exe "hi! CursorLineNr"    .s:fg_orange      .s:bg_none        .s:fmt_bold
-exe "hi! VertSplit"       .s:fg_window      .s:bg_none        .s:fmt_none
-exe "hi! NonText"         .s:fg_selection   .s:bg_none        .s:fmt_none
-exe "hi! SignColumn"      .s:fg_none        .s:bg_darkcolumn  .s:fmt_none
-exe "hi! LineNr"          .s:fg_linenr      .s:bg_none        .s:fmt_none
-exe "hi! StatusLine"      .s:fg_comment     .s:bg_background  .s:fmt_revr
-exe "hi! StatusLineNC"    .s:fg_window      .s:bg_comment     .s:fmt_revr
-exe "hi! TabLine"         .s:fg_foreground  .s:bg_darkcolumn  .s:fmt_revr
-exe "hi! Visual"          .s:fg_none        .s:bg_selection   .s:fmt_none
-exe "hi! Search"          .s:fg_background  .s:bg_yellow      .s:fmt_none
-exe "hi! MatchParen"      .s:fg_background  .s:bg_purple      .s:fmt_none
-exe "hi! Question"        .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! ModeMsg"         .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! MoreMsg"         .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! ErrorMsg"        .s:fg_background  .s:bg_red         .s:fmt_stnd
-exe "hi! WarningMsg"      .s:fg_red         .s:bg_none        .s:fmt_none
+hi! link Delimiter DraculaFg
 
-" misc
-exe "hi! SpecialKey"      .s:fg_selection   .s:bg_none        .s:fmt_none
-exe "hi! Title"           .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! Directory"       .s:fg_aqua        .s:bg_none        .s:fmt_none
+hi! link Special DraculaPink
+hi! link SpecialComment DraculaCyanItalic
+hi! link Tag DraculaCyan
+hi! link helpHyperTextJump DraculaLink
+hi! link helpCommand DraculaPurple
+hi! link helpExample DraculaGreen
+hi! link helpBacktick Special
 
-" diff
-exe "hi! DiffAdd"         .s:fg_addfg       .s:bg_addbg       .s:fmt_none
-exe "hi! DiffDelete"      .s:fg_delfg       .s:bg_none        .s:fmt_none
-exe "hi! DiffChange"      .s:fg_changefg    .s:bg_changebg    .s:fmt_none
-exe "hi! DiffText"        .s:fg_background  .s:bg_aqua        .s:fmt_none
+"}}}
 
-" fold
-exe "hi! Folded"          .s:fg_comment     .s:bg_darkcolumn  .s:fmt_none
-exe "hi! FoldColumn"      .s:fg_none        .s:bg_darkcolumn  .s:fmt_none
-"        Incsearch"
-
-" popup menu
-exe "hi! Pmenu"           .s:fg_foreground  .s:bg_selection   .s:fmt_none
-exe "hi! PmenuSel"        .s:fg_foreground  .s:bg_selection   .s:fmt_revr
-"        PmenuSbar"
-"        PmenuThumb"
-
-" Generic Syntax Highlighting
-" ---------------------------
-
-if g:dracula_italic == 1
-    exe "hi! Constant"    .s:fg_purple      .s:bg_none        .s:fmt_ital
-else
-    exe "hi! Constant"    .s:fg_purple      .s:bg_none        .s:fmt_none
-endif
-
-exe "hi! Number"          .s:fg_purple      .s:bg_none        .s:fmt_none
-exe "hi! Float"           .s:fg_purple      .s:bg_none        .s:fmt_none
-exe "hi! Boolean"         .s:fg_purple      .s:bg_none        .s:fmt_none
-exe "hi! Character"       .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! String"          .s:fg_yellow      .s:bg_none        .s:fmt_none
-
-exe "hi! Type"            .s:fg_aqua        .s:bg_none        .s:fmt_none
-exe "hi! Identifier"      .s:fg_aqua        .s:bg_none        .s:fmt_none
-exe "hi! Function"        .s:fg_green       .s:bg_none        .s:fmt_none
-
-exe "hi! Statement"       .s:fg_pink        .s:bg_none        .s:fmt_none
-exe "hi! Operator"        .s:fg_pink        .s:bg_none        .s:fmt_none
-exe "hi! Label"           .s:fg_yellow      .s:bg_none        .s:fmt_none
-"        Conditional"
-"        Repeat"
-"        Keyword"
-"        Exception"
-
-exe "hi! PreProc"         .s:fg_green       .s:bg_none        .s:fmt_none
-"        Include"
-"        Define"
-"        Macro"
-"        PreCondit"
-
-exe "hi! Special"         .s:fg_aqua        .s:bg_none        .s:fmt_none
-"        SpecialKey
-"        SpecialChar"
-"        Tag"
-"        Delimiter"
-"        SpecialComment"
-"        Debug"
-
-exe "hi! Underlined"      .s:fg_green       .s:bg_none        .s:fmt_none
-exe "hi! Ignore"          .s:fg_none        .s:bg_none        .s:fmt_none
-exe "hi! Error"           .s:fg_red         .s:bg_error       .s:fmt_undr
-
-if g:dracula_italic == 1
-    exe "hi! Todo"        .s:fg_orange      .s:bg_none        .s:fmt_bldi
-    exe "hi! Comment"     .s:fg_comment     .s:bg_none        .s:fmt_ital
-else
-    exe "hi! Todo"        .s:fg_orange      .s:bg_none        .s:fmt_bold
-    exe "hi! Comment"     .s:fg_comment     .s:bg_none        .s:fmt_none
-endif
-
-" NerdTree
-" --------
-
-exe "hi! NERDTreeOpenable"          .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeClosable"          .s:fg_yellow      .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeHelp"              .s:fg_green       .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeBookmarksHeader"   .s:fg_purple      .s:bg_none        .s:fmt_bold
-exe "hi! NERDTreeBookmarksLeader"   .s:fg_purple      .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeBookmarkName"      .s:fg_pink        .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeCWD"               .s:fg_purple      .s:bg_none        .s:fmt_bold
-exe "hi! NERDTreeDir"               .s:fg_aqua        .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeUp"                .s:fg_orange      .s:bg_none        .s:fmt_none
-exe "hi! NERDTreeDirSlash"          .s:fg_aqua        .s:bg_none        .s:fmt_none
-
-" Syntastic
-" ---------
-
-hi! link SyntasticErrorSign Error
-exe "hi! SyntasticWarningSign"          .s:fg_orange       .s:bg_darkcolumn    .s:fmt_none
-
-" Language highlight
-" ------------------
-
-" Vim command
-exe "hi! vimCommand"                    .s:fg_pink         .s:bg_none          .s:fmt_none
-
-" Javascript (compliant with https://github.com/pangloss/vim-javascript)
-exe "hi! jsFuncName"                    .s:fg_green        .s:bg_none          .s:fmt_none
-exe "hi! jsThis"                        .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! jsRegexpString"                .s:fg_purple       .s:bg_none          .s:fmt_none
-exe "hi! jsFuncCall"                    .s:fg_none         .s:bg_none          .s:fmt_none
-
-if g:dracula_italic == 1
-    exe "hi! jsFuncArgs"                .s:fg_orange       .s:bg_none          .s:fmt_ital
-else
-    exe "hi! jsFuncArgs"                .s:fg_orange       .s:bg_none          .s:fmt_none
-endif
-
-" Html
-exe "hi! htmlTag"                       .s:fg_foreground   .s:bg_none          .s:fmt_none
-exe "hi! htmlEndTag"                    .s:fg_foreground   .s:bg_none          .s:fmt_none
-exe "hi! htmlTagName"                   .s:fg_pink         .s:bg_none          .s:fmt_none
-exe "hi! htmlArg"                       .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! htmlSpecialChar"               .s:fg_purple       .s:bg_none          .s:fmt_none
-
-" Xml
-hi! link xmlTag     htmlTag
-hi! link xmlEndTag  htmlEndTag
-hi! link xmlTagName htmlTagName
-hi! link xmlAttrib  htmlArg
-
-" CSS
-if g:dracula_italic == 1
-    exe "hi! cssURL"                    .s:fg_orange       .s:bg_none          .s:fmt_undi
-else
-    exe "hi! cssURL"                    .s:fg_orange       .s:bg_none          .s:fmt_undr
-endif
-exe "hi! cssFunctionName"               .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! cssColor"                      .s:fg_purple       .s:bg_none          .s:fmt_none
-exe "hi! cssPseudoClassId"              .s:fg_purple       .s:bg_none          .s:fmt_none
-exe "hi! cssClassName"                  .s:fg_green        .s:bg_none          .s:fmt_none
-exe "hi! cssValueLength"                .s:fg_purple       .s:bg_none          .s:fmt_none
-exe "hi! cssCommonAttr"                 .s:fg_pink         .s:bg_none          .s:fmt_none
-exe "hi! cssBraces"                     .s:fg_foreground   .s:bg_none          .s:fmt_none
-
-" ruby
-exe "hi! rubyInstanceVariable"          .s:fg_none         .s:bg_none          .s:fmt_none
-exe "hi! rubyInterpolationDelimiter"    .s:fg_none         .s:bg_none          .s:fmt_none
-exe "hi! rubyPseudoVariable"            .s:fg_none         .s:bg_none          .s:fmt_none
-exe "hi! rubyGlobalVariable"            .s:fg_none         .s:bg_none          .s:fmt_none
-exe "hi! rubyClassVariable"             .s:fg_none         .s:bg_none          .s:fmt_none
-exe "hi! rubyOperator"                  .s:fg_pink         .s:bg_none          .s:fmt_none
-exe "hi! rubyFunction"                  .s:fg_green        .s:bg_none          .s:fmt_none
-exe "hi! rubyStringDelimiter"           .s:fg_yellow       .s:bg_none          .s:fmt_none
-exe "hi! rubyRegexp"                    .s:fg_yellow       .s:bg_none          .s:fmt_none
-exe "hi! rubyRegexpDelimiter"           .s:fg_yellow       .s:bg_none          .s:fmt_none
-exe "hi! rubySymbol"                    .s:fg_purple       .s:bg_none          .s:fmt_none
-exe "hi! rubyEscape"                    .s:fg_purple       .s:bg_none          .s:fmt_none
-exe "hi! rubyControl"                   .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! rubyInclude"                   .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! rubyClass"                     .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! rubyException"                 .s:fg_aqua         .s:bg_none          .s:fmt_none
-exe "hi! rubyRailsARAssociationMethod"  .s:fg_orange       .s:bg_none          .s:fmt_none
-exe "hi! rubyRailsARMethod"             .s:fg_orange       .s:bg_none          .s:fmt_none
-exe "hi! rubyRailsRenderMethod"         .s:fg_orange       .s:bg_none          .s:fmt_none
-exe "hi! rubyRailsMethod"               .s:fg_orange       .s:bg_none          .s:fmt_none
-
-if g:dracula_italic == 1
-    exe "hi! rubyBlockParameter"        .s:fg_orange       .s:bg_none          .s:fmt_ital
-    exe "hi! rubyConstant"              .s:fg_orange       .s:bg_none          .s:fmt_ital
-    exe "hi! rubyIdentifier"            .s:fg_orange       .s:bg_none          .s:fmt_ital
-else
-    exe "hi! rubyBlockParameter"        .s:fg_orange       .s:bg_none          .s:fmt_none
-    exe "hi! rubyConstant"              .s:fg_orange       .s:bg_none          .s:fmt_none
-    exe "hi! rubyIdentifier"            .s:fg_orange       .s:bg_none          .s:fmt_none
-endif
-
-" eruby
-exe "hi! erubyDelimiter"                .s:fg_none         .s:bg_none          .s:fmt_none
-exe "hi! erubyComment"                  .s:fg_comment      .s:bg_none          .s:fmt_none
-exe "hi! erubyRailsMethod"              .s:fg_aqua         .s:bg_none          .s:fmt_none
+" vim: fdm=marker ts=2 sts=2 sw=2 fdl=0 et:

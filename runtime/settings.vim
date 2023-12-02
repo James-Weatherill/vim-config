@@ -51,11 +51,6 @@ autocmd BufWinEnter * silent! loadview
 augroup END
 
 
-" This removes the massive grey bar on the left
-
-set signcolumn=no
-
-
 " Set tab behavior
 
 set tabstop=2
