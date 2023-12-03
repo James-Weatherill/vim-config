@@ -7,7 +7,7 @@ Before we begin, this is for a Mac (UNIX) setup, so this may not work one-to-one
 
 2. Now, also in the `~/` directory, create a file called `.vimrc`.
 
-3. Now that that is all setup, download and move the files in this repository into the `~/.vim/` directory, and run the command below:
+3. Now that that is all setup, download and move the files in this repository into the `~/.vim/` directory, and then run the command below:
 ```
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
