@@ -10,7 +10,7 @@ set termguicolors
 
 " This line is launching the Dracula colorscheme every time vim opens
 
-colorscheme dracula
+colorscheme monokai_pro
 
 
 " Set hybrid line numbers on the left-hand side
@@ -58,3 +58,15 @@ set shiftwidth=2
 set expandtab
 set softtabstop=2
 
+
+" This will remove whitespace highlighting for python files
+
+let g:python_highlight_space_errors = 0 
+
+
+" Here we are merging the SignColumn and the LineNumber column, and making
+" them the same colour
+
+highlight clear SignColumn
+highlight LineNr guibg=NONE
+set signcolumn=number
