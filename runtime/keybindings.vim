@@ -21,11 +21,11 @@ nnoremap <silent> <C-l> :nohls<CR><C-l>
 
 " Allow use of <Leader>d to delete without yanking
 
-nmap <leader>d "_d"
-vmap <leader>d "_d"
+nmap <leader>d "_d
+vmap <leader>d "_d
 
 
 " Allow use of <Leader>p to replace selected text with default register without yanking
 
-vmap <leader>p "_dP"
+vmap <leader>p "_dP
 
