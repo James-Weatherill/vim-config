@@ -8,9 +8,11 @@ syntax on
 set termguicolors
 
 
-" This line is launching the Dracula colorscheme every time vim opens
+" This line is launching the sonokai colorscheme every time vim opens
 
-colorscheme monokai_pro
+let g:sonokai_style = 'espresso'
+
+colorscheme sonokai
 
 
 " Set hybrid line numbers on the left-hand side
