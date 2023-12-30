@@ -33,7 +33,7 @@ set wildmode=longest:full,full
 set wildoptions=pum
 
 
-" This block of code enables incremental search highlighting, and peremnant
+" This block of code enables incremental search highlighting, and permenant
 " search highlighting
 
 set incsearch
