@@ -15,7 +15,7 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 
 **This will install the Vim-Plug plugin manager into the local Vim setup.**
 
-4. All of the files and directories are now in place make Vim look exactly like it should. The last big step is to go to the `~/.vimrc` file and paste all of this vimscript code into that file:
+4. All of the files and directories are now in place to make Vim look exactly like it should. The last big step is to go to the `~/.vimrc` file and paste all of this vimscript code into that file:
 ```
 " This file contains the main code that supports 'vim-plug'.
 

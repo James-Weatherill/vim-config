@@ -12,5 +12,8 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " vim-ployglot
 Plug 'sheerun/vim-polyglot'
 
+" jupytext
+Plug 'goerz/jupytext.vim'
+
 call plug#end()
 
